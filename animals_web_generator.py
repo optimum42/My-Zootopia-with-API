@@ -8,12 +8,6 @@ API_KEY = os.getenv("API_KEY")
 REQUEST_URL = 'https://api.api-ninjas.com/v1/animals?name='
 
 
-def load_data(file_path):
-  """ Loads a JSON file """
-  with open(file_path, "r") as handle:
-    return json.load(handle)
-
-
 def load_data_from_api(search_term = "fox"):
     """ Loads a JSON from API ninjas
     https://api-ninjas.com/
@@ -30,59 +24,10 @@ def load_html(file_path):
       return handle.read()
 
 
-def get_skin_types(data):
-    """ returns a set of the available skin types """
-    skin_types = set()
-    for item in data:
-        skin_types.add(item.get("characteristics", {}).get("skin_type"))
-    return skin_types
-
-
 def write_html(html, file_path):
   """ Writes an HTML file """
   with open(file_path, "w") as handle:
       handle.write(html)
-
-
-def print_animal_data(data):
-    """ prints the animal data to the screen"""
-    for item in data:
-        complete_list = [
-            item.get("name"),
-            item.get("characteristics", {}).get("diet"),
-            item.get("locations"),
-            item.get("characteristics", {}).get("type"),
-        ]
-        if not None in complete_list: # only print if all fields are set
-            print(f"Name: {complete_list[0]}")
-            print(f"Diet: {complete_list[1]}")
-            print(f"Location: ", end="")
-            for location in complete_list[2][:-1]:
-                print(f"{location}, ", end="")
-            print(complete_list[2][-1])
-            print(f"Type: {complete_list[3]}") # last one without ','
-            print()
-
-
-def animal_data_to_str(data):
-    """ writes the animal data to a string and returns it """
-    output = ""
-    for item in data:
-        complete_list = [
-            item.get("name"),
-            item.get("characteristics", {}).get("diet"),
-            item.get("locations"),
-            item.get("characteristics", {}).get("type"),
-        ]
-        if not None in complete_list: # only print if all fields are set
-            output += (f"Name: {complete_list[0]}\n")
-            output += (f"Diet: {complete_list[1]}\n")
-            output += (f"Location: ")
-            for location in complete_list[2][:-1]:
-                output += (f"{location}, ")
-            output += (complete_list[2][-1])
-            output += (f"\nType: {complete_list[3]}\n\n") # last one without ','
-    return output
 
 
 def serialize_animal(animal):
@@ -123,6 +68,7 @@ def serialize_animal(animal):
 def animal_data_to_html(data):
     """ writes all the animals from data to a string and returns it """
     output = ""
+    assert len(data) > 0
     for item in data:
         output += serialize_animal(item)
     return output
@@ -133,7 +79,10 @@ def main():
     animal_name = input("Enter a name of an animal: ")
     animals = load_data_from_api(animal_name)
 
-    animals_html = animal_data_to_html(animals)
+    if len(animals) == 0:
+        animals_html = f"<h2 style='text-align: center;'>The animal '{animal_name}' doesn't exist.</h2>\n"
+    else:
+        animals_html = animal_data_to_html(animals)
     html_template = load_html("animals_template.html")
     html_output = html_template.replace("__REPLACE_ANIMALS_INFO__", animals_html)
 
