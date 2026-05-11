@@ -1,10 +1,38 @@
 import json
+import os
+from dotenv import load_dotenv
+import requests
+
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
+REQUEST_URL = 'https://api.api-ninjas.com/v1/animals?name='
 
 
 def load_data(file_path):
   """ Loads a JSON file """
   with open(file_path, "r") as handle:
     return json.load(handle)
+
+
+def load_data_from_api(search_term = "fox"):
+    """ Loads a JSON from API ninjas
+    https://api-ninjas.com/
+    """
+    url = REQUEST_URL + search_term
+    headers = {'X-Api-Key': API_KEY}
+    response = requests.get(url, headers)
+    return response.json()
+
+
+def get_request():
+    search_term = input("Please enter a search term: ")
+    url = REQUEST_URL + search_term
+    headers = {'X-Api-Key': API_KEY}
+    response = requests.get(url, headers)
+    print(response)
+    print(response.json())
+    for row in response.json():
+        print(row)
 
 
 def load_html(file_path):
@@ -112,7 +140,11 @@ def animal_data_to_html(data):
 
 
 def main():
-    loaded_data = load_data("animals_data.json")
+#    loaded_data = load_data("animals_data.json")
+    loaded_data = load_data_from_api()
+    for animal in loaded_data:
+        print(animal)
+    print(len(loaded_data))
 
     print("My Animal Repository")
     print("--------------------\n")
