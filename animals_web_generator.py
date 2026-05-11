@@ -1,21 +1,4 @@
-import json
-import os
-from dotenv import load_dotenv
-import requests
-
-load_dotenv()
-API_KEY = os.getenv("API_KEY")
-REQUEST_URL = 'https://api.api-ninjas.com/v1/animals?name='
-
-
-def load_data_from_api(search_term = "fox"):
-    """ Loads a JSON from API ninjas
-    https://api-ninjas.com/
-    """
-    url = REQUEST_URL + search_term
-    headers = {'X-Api-Key': API_KEY}
-    response = requests.get(url, headers)
-    return response.json()
+import data_fetcher
 
 
 def load_html(file_path):
@@ -74,10 +57,19 @@ def animal_data_to_html(data):
     return output
 
 
+def get_animal_name():
+    """ asks for an animal name and verifies the input """
+    while True:
+        animal_name = input("Enter a name of an animal: ")
+        animal_name = animal_name.strip()
+        if animal_name.isalpha():
+            return animal_name
+
+
 def main():
 #    loaded_data = load_data("animals_data.json")
-    animal_name = input("Enter a name of an animal: ")
-    animals = load_data_from_api(animal_name)
+    animal_name = get_animal_name()
+    animals = data_fetcher.fetch_data(animal_name)
 
     if len(animals) == 0:
         animals_html = f"<h2 style='text-align: center;'>The animal '{animal_name}' doesn't exist.</h2>\n"
