@@ -1,17 +1,2 @@
-Requirements
-============
-os
-dotenv
+python-dotenv
 requests
-
-
-Secure usage of API-Key
-=======================
-1. Create a file ".env" in the project directory with the following content:
-API_KEY = INSERT_YOUR_API_KEY_HERE
-2. Install python-dotenv: pip/pip3 install python-dotenv
-3. In your Python-Code:
-import os
-from dotenv import load_dotenv
-load_dotenv()
-api_key = os.getenv("API_KEY")
