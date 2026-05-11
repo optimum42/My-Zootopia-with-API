@@ -24,17 +24,6 @@ def load_data_from_api(search_term = "fox"):
     return response.json()
 
 
-def get_request():
-    search_term = input("Please enter a search term: ")
-    url = REQUEST_URL + search_term
-    headers = {'X-Api-Key': API_KEY}
-    response = requests.get(url, headers)
-    print(response)
-    print(response.json())
-    for row in response.json():
-        print(row)
-
-
 def load_html(file_path):
   """ Loads an HTML file """
   with open(file_path, "r") as handle:
@@ -141,41 +130,10 @@ def animal_data_to_html(data):
 
 def main():
 #    loaded_data = load_data("animals_data.json")
-    loaded_data = load_data_from_api()
-    for animal in loaded_data:
-        print(animal)
-    print(len(loaded_data))
+    animal_name = input("Enter a name of an animal: ")
+    animals = load_data_from_api(animal_name)
 
-    print("My Animal Repository")
-    print("--------------------\n")
-
-    # show selection of available skin types to choose from
-    skins = list(get_skin_types(loaded_data))
-    print("0: All Types")
-    i = 1
-    for skin in skins:
-        print(f"{i}: {skin}")
-        i += 1
-
-    choice = 0
-    while True:
-        try:
-            choice = int(input("Choose a Skin Type Number: "))
-            if 0 <= choice <= len(skins):
-                break
-        except ValueError:
-            pass
-        print("Invalid choice. Try again.")
-
-
-    if choice == 0:
-        filtered_data = loaded_data # animals of all types - no filter
-    else:
-        skin_type = skins[choice - 1]
-        filtered_data = [item for item in loaded_data if
-                         item['characteristics']['skin_type'] == skin_type]
-
-    animals_html = animal_data_to_html(filtered_data)
+    animals_html = animal_data_to_html(animals)
     html_template = load_html("animals_template.html")
     html_output = html_template.replace("__REPLACE_ANIMALS_INFO__", animals_html)
 
